@@ -31,6 +31,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* StaticMesh;
 
+
 	virtual void OnItemOverlap(
 		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
