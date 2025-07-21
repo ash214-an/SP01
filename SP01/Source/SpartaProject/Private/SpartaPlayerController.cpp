@@ -1,5 +1,7 @@
 #include "SpartaPlayerController.h"
+#include "SpartaGameState.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 
 
 ASpartaPlayerController::ASpartaPlayerController()
@@ -7,7 +9,8 @@ ASpartaPlayerController::ASpartaPlayerController()
 	MoveAction(nullptr),
 	JumpAction(nullptr),
 	LookAction(nullptr),
-	SprintAction(nullptr)
+	SprintAction(nullptr),
+	HUDWidgetClass(nullptr)
 {
 
 }
@@ -26,4 +29,22 @@ void ASpartaPlayerController::BeginPlay()
 			}
 		}
 	}
+	if (HUDWidgetClass)
+	{
+		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidgetInstance)
+		{
+			HUDWidgetInstance->AddToViewport();
+		}
+	}
+	ASpartaGameState* SpartaGameState = GetWorld() ? GetWorld()->GetGameState<ASpartaGameState>() : nullptr;
+	if (SpartaGameState)
+	{
+		SpartaGameState->UpdateHUD();
+	}
+}
+
+UUserWidget* ASpartaPlayerController::GetHUDWidget() const
+{
+	return HUDWidgetInstance;
 }

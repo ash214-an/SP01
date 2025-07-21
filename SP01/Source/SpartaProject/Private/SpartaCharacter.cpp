@@ -22,6 +22,9 @@ ASpartaCharacter::ASpartaCharacter()
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+	MaxHealth = 100.0f;
+	Health = MaxHealth;
 }
 
 
@@ -146,4 +149,40 @@ void ASpartaCharacter::StopSprint(const FInputActionValue& value)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
+}
+
+float ASpartaCharacter::GetHealth() const
+{
+	return Health;
+}
+void ASpartaCharacter::AddHealth(float Amount)
+{
+	// 체력을 회복시킴. 최대 체력을 초과하지 않도록 제한함
+	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Log, TEXT("Health increased to: %f"), Health);
+}
+
+float ASpartaCharacter::TakeDamage(float DamageAmount,
+	struct FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health decreased to: %f"), Health);
+
+	// 체력이 0 이하가 되면 사망 처리
+	if (Health <= 0.0f)
+	{
+		OnDeath();
+	}
+
+	// 실제 적용된 데미지를 반환
+	return ActualDamage;
+}
+
+void ASpartaCharacter::OnDeath()
+{
+	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
+
 }

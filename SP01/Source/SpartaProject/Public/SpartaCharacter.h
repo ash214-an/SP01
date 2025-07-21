@@ -20,7 +20,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category ="Camera")
 	UCameraComponent* CameraComp;
 
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetHealth() const;
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void AddHealth(float Amount);
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "health")
+	float MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "health")
+	float Health;
+	
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount,
+	struct FDamageEvent const& DamageEvent,
+		AController* EventInstigator, AActor* DamageCauser) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float NormalSpeed; // 기본 걷기 속도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -28,7 +43,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	float SprintSpeed;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION()
 	void Move(const FInputActionValue& value);
@@ -42,5 +56,7 @@ protected:
 	void StartSprint(const FInputActionValue& value);
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
+
+	void OnDeath();
 
 }; 
